@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from app.models.schemas import ChatRequest
+from PersonalChief.app.models.schemas import ChatRequest
 from fastapi.responses import StreamingResponse
-from app.agents.Personal_chief import search_recipes, get_messages, clear_messages
+from PersonalChief.app.agents.Personal_chief import search_recipes, get_messages, clear_messages
 
 router = APIRouter()
 

@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16  # 基于官方 Postgres 16，并预装了 pgvector 扩展
+    container_name: agent_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: langchain
+      POSTGRES_PASSWORD: langchain
+      POSTGRES_DB: langchain
+    ports:
+      - "5432:5432"  # 主机端口:容器端口
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # 命名卷，确保数据持久化，容器删除后不丢失
+    shm_size: 2g  # 共享内存，PostgreSQL 建议适当调大
+
+volumes:
+  pgdata:

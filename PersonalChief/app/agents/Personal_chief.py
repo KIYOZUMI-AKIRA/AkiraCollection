@@ -1,14 +1,14 @@
 # Langsmith会自动托管agent的记忆，无需再添加checkpointer
 # 环境准备
 import psycopg
-from openai.types.chat import chat_completion_message_tool_call_union_param
 from psycopg.rows import dict_row
 from langgraph.checkpoint.postgres import PostgresSaver
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain_tavily import TavilySearch
-from app.common.logger import logger
-from langchain.messages import HumanMessage, AIMessage, AIMessageChunk
+from PersonalChief.app.common.logger import logger
+from langchain.messages import HumanMessage, AIMessage
+
 load_dotenv()
 
 # 定义工具

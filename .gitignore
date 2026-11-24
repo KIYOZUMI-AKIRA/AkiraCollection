@@ -9,7 +9,7 @@ wheels/
 # 虚拟环境
 .venv/
 venv/
-env/
+.env
 
 # LangGraph 缓存
 .langgraph_api/
@@ -30,4 +30,4 @@ env/
 Thumbs.db
 
 # 忽略前端编译产物
-app/static/
+PersonalChief/app/static/
