@@ -36,6 +36,9 @@ connection = psycopg.connect(
 
 checkpointer = PostgresSaver(connection)
 
+# 首次启动自动初始化 checkpoint 表（幂等，可重复执行）
+checkpointer.setup()
+
 # 创建智能体
 agent = create_agent(
     model="deepseek-chat",
@@ -68,33 +71,53 @@ async def search_recipes(prompt: str, image: str, thread_id: str):
         logger.error(f"\n[错误] : {str(e)}")
         yield "信息检索失败,试试看手动输入食物列表？"
 
+def _extract_text(msg) -> str:
+    """从消息 content 中提取文本，兼容纯文本和多模态（图片+文本）两种形式"""
+    content = msg.content
+    if isinstance(content, str):
+        return content
+
+    text_parts = []
+    has_image = False
+    if isinstance(content, list):
+        for item in content:
+            if isinstance(item, dict):
+                if item.get("type") == "text":
+                    text_parts.append(item.get("text", ""))
+                elif item.get("type") == "image":
+                    has_image = True
+
+    text = "\n".join(p for p in text_parts if p)
+    if has_image:
+        text = f"{text}\n📷 [图片]" if text else "📷 [图片]"
+    return text
+
+
 async def get_messages(thread_id: str):
     """获取历史消息"""
     logger.info(f"获取历史消息, thread_id: {thread_id}")
 
-    # 根据uid查询checkpoint
-    checkpointer = checkpointer.get({"configurable": {"thread_id": thread_id}})
-
-    if not checkpoint:
+    # 根据 thread_id 查询 checkpoint
+    snapshot = checkpointer.get({"configurable": {"thread_id": thread_id}})
+    if not snapshot:
         return []
 
-    channel_values = checkpoint.get("channel_values")
-    if not channel_values:
-        return []
-
+    channel_values = snapshot.checkpoint.get("channel_values") or {}
     messages = channel_values.get("messages", [])
     if not messages:
         return []
 
     result = []
     for msg in messages:
-        if not msg.content:
+        text = _extract_text(msg)
+        if not text:
             continue
 
-        if isinstance(msg.content, HumanMessage):
-            result.append({"role": "user", "content": msg.content})
-        elif isinstance(msg.content, AIMessage):
-            result.append({"role": "assistant", "content": msg.content})
+        if isinstance(msg, HumanMessage):
+            result.append({"role": "user", "content": text})
+        elif isinstance(msg, AIMessage):
+            result.append({"role": "assistant", "content": text})
+        # ToolMessage 等中间过程消息不返回给前端
 
     return result
 
