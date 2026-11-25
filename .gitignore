@@ -1,0 +1,46 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# 虚拟环境
+.venv/
+venv/
+.env
+
+# LangGraph 缓存
+.langgraph_api/
+
+# Python 缓存
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook 检查点
+.ipynb_checkpoints/
+
+# IDE 配置
+.idea/
+.vscode/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 忽略前端编译产物
+PersonalChief/app/static/
+
+# ==== 本地学习资料（仅本地保留，不提交）====
+/Chapter_1_LangChain_J/
+/Chapter_2_Langchain_S/
+/Chapter_3_RAG/
+/src/
+
+# 旧项目根配置文件（项目已迁入 PersonalChief/，仅本地保留）
+/pyproject.toml
+/uv.lock
+/docker-compose.yml
+/langgraph.json
+/.python-version
